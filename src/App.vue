@@ -15,8 +15,13 @@ export default {
 }
 </script>
 
-<style>
+<style lang='scss'>
 #app {
-
+    display: flex;
+    height: 100%;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: $BGCOLOR;
 }
 </style>
