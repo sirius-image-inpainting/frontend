@@ -11,7 +11,6 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-@import url('https://fonts.googleapis.com/css2?family=Merriweather&display=swap');
 
 .header {
     font-family: 'Merriweather', serif;
