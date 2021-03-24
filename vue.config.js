@@ -9,5 +9,8 @@ module.exports = {
         additionalData: `@import "~@/variables.scss";`
       },
     }
+  },
+  devServer: {
+    proxy: 'http://localhost:1337'
   }
 }

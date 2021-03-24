@@ -54,6 +54,7 @@
 
 <script>
 import Editor from '@/components/Editor/Editor.vue'
+import axios from 'axios'
 
 export default {
     name: 'GAN',
@@ -69,6 +70,9 @@ export default {
             active_tool: 0,
             cgan: 1,
             brush_visible: false,
+
+            /* server */
+            server_host: 'http://127.0.0.1:1337',
         }
     },
     methods: {
@@ -110,8 +114,7 @@ export default {
             return reader.readAsDataURL(xhr.response)
         },
         load_random_image() {
-            // TODO
-            this.$refs.editor.setBackgroundImage('place.jpg')
+            this.$refs.editor.setBackgroundImage('/random_image')
         },
         load_image_from_file() {
             // TODO
