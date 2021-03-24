@@ -123,7 +123,14 @@ export default {
         run_model() {
             console.log('run_model')
             let bg_image = this.$refs.editor.getBackgroundImage()
-            let mask = this.$refs.editor.saveImage()
+            let with_mask = this.$refs.editor.saveImage()
+
+            axios.post('/run_model', {
+                'original': bg_image,
+                'with_mask': with_mask,
+            }).then(function (response) {
+                console.log(response)
+            })
         },
     },
     mounted() {
