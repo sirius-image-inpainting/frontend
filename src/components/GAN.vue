@@ -119,6 +119,8 @@ export default {
         },
         run_model() {
             console.log('run_model')
+            let bg_image = this.$refs.editor.getBackgroundImage()
+            let mask = this.$refs.editor.saveImage()
         },
     },
     mounted() {

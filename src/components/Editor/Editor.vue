@@ -71,6 +71,9 @@
                 })
                 return findedObject;
             },
+            getBackgroundImage() {
+                return this.canvas.backgroundImage.toDataURL('image/jpeg', 1)
+            },
             changeColor(colorProperty) {
                 this.color = colorProperty;
                 this.set(this.currentActiveTool)
