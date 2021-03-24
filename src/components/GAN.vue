@@ -5,8 +5,12 @@
             :canvasHeight="canvas_height"
             ref='editor'
             id='input-image'
-            class='image' @click="load_file"/>
-    <div class='button' id='random-image' @click="load_random_image">Random</div>
+            class='image'/>
+
+    <div id='load-buttons' class='load-buttons'>
+        <!-- <div class='button' id='load-image' @click="load_image_from_file">Load</div> -->
+        <div class='button' id='random-image' @click="load_random_image">Random</div>
+    </div>
 
     <div class='nn' id='nn1'>
         <div class='layer' id='layer1' style='height: 256px;' />
@@ -30,28 +34,26 @@
     <div class='button' id='compute' @click='run_model'>Compute</div>
 
     <div class='tools' id='tools-panel'>
-        <div class='choose-gan' id='choose-gan'>
-            GAN:
-            <div class='tool-button choose-gan-button'>#1</div>
-            <div class='tool-button choose-gan-button'>#2</div>
-            <div class='tool-button choose-gan-button'>#3</div>
-        </div>
-
-        <div class='toolset' id='toolset-1'>
-            <div :class='{"brush": true, "tool-button": true, "active": active_tool == 0}'
-                @click="set_active_tool('draw')" />
-            <input type="range" min="5" max="30" v-model="brush_width" class='slider' @change="set_brush_conf">
-            <div :class='{"eraser": true, "tool-button": true, "active": active_tool == 1}'
-                @click="set_active_tool('eraser')" />
-            <input type="range" min="1" max="100" v-model="eraser_width" class='slider' @change="set_eraser_conf">
-        </div>
-
+        <span>GAN:</span>
+        <div :class='{"tool-button": true, "choose-gan-button":true, "gan_active": cgan==1}'
+            @click="set_gan(1)">#1</div>
+        <div :class='{"tool-button": true, "choose-gan-button":true, "gan_active": cgan==2}'
+            @click="set_gan(2)">#2</div>
+        <div :class='{"tool-button": true, "choose-gan-button":true, "gan_active": cgan==3}'
+            @click="set_gan(3)">#3</div>
+        <span>Tools:</span>
+        <div :class='{"box": true, "tool-button": true, "active": active_tool == 0}'
+            @click="set_active_tool(0)" />
+        <div :class='{"brush": true, "tool-button": true, "active": active_tool == 1}'
+            @click="set_active_tool(1)" v-if="brush_visible"/>
+        <div :class='{"eraser": true, "tool-button": true, "active": active_tool == 2}'
+            @click="set_active_tool(2)" />
     </div>
   </div>
 </template>
 
 <script>
-import Editor from 'vue-image-markup'
+import Editor from '@/components/Editor/Editor.vue'
 
 export default {
     name: 'GAN',
@@ -60,42 +62,67 @@ export default {
     },
     data: () => {
         return {
-            canvas_width: '256',
-            canvas_height: '256',
+            canvas_width: '320',
+            canvas_height: '320',
 
             /* tool panel */
             active_tool: 0,
-            brush_width: 10,
-            eraser_width: 10,
+            cgan: 1,
+            brush_visible: false,
         }
     },
     methods: {
-        load_file() {
-            console.log('load_image')
+        set_active_tool(tool_id) {
+            this.active_tool = tool_id
+            if (tool_id == 0) {
+                this.$refs.editor.set('rect', {
+                    fill: '#00ff00',
+                    stroke: '#00ff00',
+                    strokeWidth: 0,
+                })
+            }
+            if (tool_id == 1) {
+                this.$refs.editor.set('freeDrawing', {
+                    'stroke': '#00ff00',
+                })
+            }
+            if (tool_id == 2) {
+                this.$refs.editor.set('eraser')
+            }
+        },
+        set_gan(gan_id) {
+            if (gan_id > 1) {
+                this.brush_visible = true
+            } else {
+                this.brush_visible = false
+            }
+            this.$refs.editor.clear()
+            this.cgan = gan_id
+        },
+        image2base64(url) {
+            var xhr = new XMLHttpRequest()
+            /* xhr.responseType = 'blob' */
+            xhr.open('GET', url, false)
+            xhr.send()
+            print(xhr.response)
+
+            var reader = new FileReader()
+            return reader.readAsDataURL(xhr.response)
         },
         load_random_image() {
+            // TODO
             this.$refs.editor.setBackgroundImage('place.jpg')
+        },
+        load_image_from_file() {
+            // TODO
+            console.log('load_image')
         },
         run_model() {
             console.log('run_model')
         },
-        set_active_tool(tool_name) {
-            if (tool_name == 'draw') {
-                this.active_tool = 0
-            }
-            if (tool_name == 'eraser') {
-                this.active_tool = 1
-            }
-        },
-        set_brush_conf() {
-            this.$refs.editor.set('freeDrawing', {strokeWidth: this.brush_width})
-        },
-        set_eraser_conf() {
-            this.$refs.editor.set('freeDrawing', {strokeWidth: this.eraser_width})
-        }
     },
     mounted() {
-       this.$refs.editor.set('freeDrawing')
+        this.set_active_tool(this.active_tool)
     }
 }
 </script>
@@ -111,23 +138,40 @@ export default {
         [row1-start] "input-label   .     output-label" [row1-end]
         [row2-start] "input-image   nn    output-image" [row2-end]
         [row3-start] "choose-random tools compute     " [row3-end]
-        / 270px 470px 270px;
+        / 340px 470px 340px;
 
     .image {
         justify-self: center;
-        width: 256px;
-        height: 256px;
-        border: 10px solid #eee;
-        /* box-sizing: border-box; */
+        width: 320px;
+        height: 320px;
+        border: 12px solid #eee;
 
         border-radius: 5px;
         background-color: #fff;
     }
 
+    .load-buttons {
+        justify-self: center;
+
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: flex-start;
+
+        #random-image {
+            width: 90px;
+        }
+
+        #load-image {
+            width: 90px;
+            margin-right: 20px;
+        }
+    }
+
     .label {
         justify-self: center;
         font-family: sans-serif;
-        font-size: 1.2rem;
+        font-size: 1.5rem;
         color: $TEXTCOLOR;
     }
 
@@ -165,26 +209,16 @@ export default {
         justify-self: center;
         align-self: start;
 
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
         justify-content: center;
-        width: 100%;
+        align-items: center;
+        width: 50%;
+        row-gap: 30px;
 
-        .choose-gan {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            color: $TEXTCOLOR;
-            font-family: sans-serif;
-
-            .choose-gan-button {
-                border-radius: 5px;
-                margin: 0 10px;
-            }
-        }
+        color: $TEXTCOLOR;
+        font-family: sans-serif;
+        user-select: none;
 
         .toolset {
             display: grid;
@@ -192,25 +226,6 @@ export default {
             row-gap: 10px;
             column-gap: 10px;
             margin-top: 20px;
-        }
-
-        input[type='range'] {
-            align-self: center;
-            appearance: none;
-            user-select: none;
-            outline: none;
-
-            height: 8px;
-            border-radius: 10px;
-            background-color: #bbb;
-
-            &::-webkit-slider-thumb {
-                appearance: none;
-                width: 12px;
-                height: 16px;
-                border-radius: 50%;
-                background-color: #333;
-            }
         }
 
         .tool-button {
@@ -237,6 +252,16 @@ export default {
                         inset -6px -6px 12px #f0f0f0;
         }
 
+        .choose-gan-button {
+            border-radius: 5px;
+            margin: 0 10px;
+        }
+
+        .gan_active {
+            box-shadow: inset 6px 6px 12px #b2b2b2,
+                        inset -6px -6px 12px #f0f0f0;
+        }
+
         .brush {
             background-image: url('~@/assets/pencil.png');
             background-size: 15px;
@@ -246,6 +271,13 @@ export default {
 
         .eraser {
             background-image: url('~@/assets/eraser.png');
+            background-size: 15px;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .box {
+            background-image: url('~@/assets/square.png');
             background-size: 15px;
             background-repeat: no-repeat;
             background-position: center;
@@ -296,12 +328,13 @@ export default {
         grid-area: output-image;
     }
 
-    #random-image {
+    #load-buttons {
         grid-area: choose-random;
     }
 
     #compute {
         grid-area: compute;
+        width: 90px;
     }
 
     #tools-panel {

@@ -1,6 +1,6 @@
 <template>
   <div class='header'>
-    ii
+    Inpainting demo v0.1
   </div>
 </template>
 
@@ -13,10 +13,10 @@ export default {
 <style lang='scss' scoped>
 
 .header {
-    font-family: 'Merriweather', serif;
-    font-size: 2rem;
+    font-size: 2.5rem;
     padding: 0;
     padding-left: 10px;
     padding-top: 10px;
+    color: $TEXTCOLOR;
 }
 </style>
