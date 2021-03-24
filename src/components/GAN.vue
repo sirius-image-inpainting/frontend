@@ -40,10 +40,10 @@
         <div class='toolset' id='toolset-1'>
             <div :class='{"brush": true, "tool-button": true, "active": active_tool == 0}'
                 @click="set_active_tool('draw')" />
-            <input type="range" min="1" max="100" :value="brush_width" class='slider' @change="change_brush">
+            <input type="range" min="5" max="30" v-model="brush_width" class='slider' @change="set_brush_conf">
             <div :class='{"eraser": true, "tool-button": true, "active": active_tool == 1}'
                 @click="set_active_tool('eraser')" />
-            <input type="range" min="1" max="100" :value="eraser_width" class='slider' @change="change_eraser">
+            <input type="range" min="1" max="100" v-model="eraser_width" class='slider' @change="set_eraser_conf">
         </div>
 
     </div>
@@ -87,11 +87,11 @@ export default {
                 this.active_tool = 1
             }
         },
-        change_brush() {
-            console.log('brush')
+        set_brush_conf() {
+            this.$refs.editor.set('freeDrawing', {strokeWidth: this.brush_width})
         },
-        change_eraser() {
-            console.log('eraser')
+        set_eraser_conf() {
+            this.$refs.editor.set('freeDrawing', {strokeWidth: this.eraser_width})
         }
     },
     mounted() {
