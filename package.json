@@ -39,7 +39,8 @@
     "rules": {
       "no-unused-vars": "off",
       "no-case-declarations": "off",
-      "no-prototype-builtins": "off"
+      "no-prototype-builtins": "off",
+      "no-extra-semi": "off"
     }
   },
   "browserslist": [
