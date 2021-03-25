@@ -128,8 +128,11 @@ export default {
             axios.post('/run_model', {
                 'original': bg_image,
                 'with_mask': with_mask,
+                'model_id': this.cgan,
             }).then(function (response) {
-                console.log(response)
+                let image_data = response.data
+                let elem = document.getElementById('output-image')
+                elem.style.backgroundImage = "url(" + image_data + ")"
             })
         },
     },
@@ -338,6 +341,9 @@ export default {
 
     #output-image {
         grid-area: output-image;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
     }
 
     #load-buttons {
